@@ -25,3 +25,6 @@ export class AppComponent {
     });
   }
 }
+
+
+//Nota: este elemento se dejo asi de stock, ya que no fue necesario moverle xd

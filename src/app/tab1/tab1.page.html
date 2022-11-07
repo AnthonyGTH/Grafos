@@ -1,17 +1,77 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Tab 1
-    </ion-title>
-  </ion-toolbar>
+    <ion-toolbar>
+        <ion-title size="small">Calculador de grafos (Dijkstra)</ion-title>
+        <ion-buttons slot="secondary">
+            <ion-button color="danger" (click)="clearData()">Reset</ion-button>
+            <!-- Visual del boton reset que llama a la funcion clearData en typescript -->
+        </ion-buttons>
+
+    </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 1</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content [fullscreen]="true" style="text-align: center;" no-bounce overflow-scroll="true" scroll="true">
+    <!-- boton flotante que se activa al ingresar todos los datos de nodos y seleccionar el nodo inicio y nodo fin para calcular -->
+    <ion-button color="success" (click)="calculate()" [disabled]="!(startLetter!=''&&finishLetter!=''&&tempWeights&&tempWeights.length!=0)" style="position: fixed; left: 35%; bottom: 0%; z-index: 10;">Calcular</ion-button>
 
-  <app-explore-container name="Tab 1 page"></app-explore-container>
+    <ion-list>
+
+        <ion-item>
+            <!-- Input de el nodo actual -->
+            <ion-label fixed>Nodo numero {{(i+1)}}</ion-label>
+            <ion-input type="text" placeholder="A, B...Z" required [(ngModel)]="bufferLetter" #buffLett></ion-input>
+        </ion-item>
+        <!-- Creacion de nodo si es que la letra en buffer existe -->
+        <ion-button color="primary" (click)="addLetter()" [disabled]="!bufferLetter">Crear nodo</ion-button>
+        <ion-item *ngIf="letters.length>1">
+            <!-- seleccionador de nodo inicio -->
+            <ion-label>Inicio</ion-label>
+            <ion-select [(ngModel)]="startLetter">
+                <!-- ciclo de todos los nodos para las opciones del select -->
+                <ion-select-option *ngFor="let lett of letters;" value="{{lett}}">{{lett}}</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <ion-item *ngIf="letters.length>1">
+            <!-- seleccionador de nodo fin -->
+            <ion-label>Fin</ion-label>
+            <ion-select [(ngModel)]="finishLetter">
+                <!-- ciclo de todos los nodos para las opciones del select -->
+                <ion-select-option *ngFor="let lett of letters;">{{lett}}</ion-select-option>
+            </ion-select>
+        </ion-item>
+
+    </ion-list>
+    <div *ngIf="letters&&letters.length!=0">
+        <h6>Nodos:</h6>
+        <!-- Informacion de nodos ingresados -->
+        <strong *ngFor="let lett of letters;" style="margin-right: 5px;">{{lett}}</strong>
+    </div>
+
+    <div *ngIf="tempWeights&&tempWeights.length!=0">
+        <h6>Pesos:</h6>
+        <!-- Informacion de pesos ingresados entre nodos -->
+        <p *ngFor="let weights of tempWeights;" style="margin-right: 5px;"> Pesos del nodo <strong>{{weights}}</strong>:<br> {{weightsBetweenLetters[weights]}}</p>
+    </div>
+
+    <br>
+
+
+    <ion-card *ngFor="let lett of letters; let i=index">
+        <!-- Ciclo que muestra los nodos y sus posibles pesos entre otros -->
+        <h3><strong>{{lett}}</strong></h3>
+        <ion-grid>
+            <ion-row>
+                <ion-col col-3 *ngFor="let lett2 of letters; let j=index" style="background-color: #f1f1f1;">
+                    <!-- Ciclo que muestra todos los nodos a excepcion del padre en ciclo para ingresar los pesos. no tiene sentido decir peso entre nodo A y nodo A xd -->
+                    <div *ngIf="lett != lett2">
+                        <strong>{{lett2}}</strong>
+                        <ion-input type="number" placeholder="'{{lett}}' - '{{lett2}}'" required [(ngModel)]="buffWeight[(i.toString()+j.toString())]" #generateHeight></ion-input>
+                        <ion-button color="secondary" (click)="addWeight(lett, lett2, ((i.toString()+j.toString())))" [disabled]="!(buffWeight[((i.toString()+j.toString()))]!=''&&buffWeight[((i.toString()+j.toString()))]!=undefined)">Agregar</ion-button>
+
+                    </div>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+    </ion-card>
+    <br>
+    <br>
 </ion-content>
